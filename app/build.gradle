@@ -1,0 +1,83 @@
+apply plugin: 'com.android.application'
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'me.tatarka:gradle-retrolambda:2.4.1'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'retrolambda'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+apply plugin: 'robolectric'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "20.0.0"
+
+    defaultConfig {
+        applicationId "info.sugargoodman.delaytimer"
+        minSdkVersion 19
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "com.uphyca.testing.JUnit4InstrumentationTestRunner"
+    }
+    buildTypes {
+        release {
+            //runProguard false
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    dependencies {
+        androidTestCompile ("junit:junit:4.+")
+        androidTestCompile ("com.uphyca:android-junit4:+")
+        androidTestCompile 'org.robolectric:robolectric:2.4'
+    }
+}
+
+// とりあえずGitHubの設定例をコピペ
+robolectric {
+    // configure the set of classes for JUnit tests
+    include '**/*Test.class'
+
+    // configure max heap size of the test JVM
+    maxHeapSize = '2048m'
+
+    // configure whether failing tests should fail the build
+    ignoreFailures true
+
+    // use afterTest to listen to the test execution results
+    afterTest { descriptor, result ->
+        println "Executing test for {$descriptor.name} with result: ${result.resultType}"
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+apply plugin: 'idea'
+idea {
+    module {
+        testOutputDir = file('build/androidTest/debug')
+    }
+}
+
+
